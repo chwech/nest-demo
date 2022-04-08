@@ -1,11 +1,12 @@
 import { Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
-import axios from 'axios';
-import * as getRawBody from 'raw-body';
 import { getReqRawBody, sha1 } from 'src/utils';
 import * as convert from 'xml-js';
+import { WechatService } from './wechat.service';
 
 @Controller('wechat')
 export class WechatController {
+  constructor(private wechatService: WechatService) {}
+
   @Get('checkSignature')
   checkSignature(@Query() query) {
     const token = 'learnweichatdevelop';
@@ -85,20 +86,13 @@ export class WechatController {
     }
   }
 
-  @Get()
-  getAccessToken() {
-    axios
-      .get(
-        'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxf5e91d9a8d1511ec&secret=49caebd69e9959cf8b12a108cf46d7b5',
-      )
-      .then((res) => {
-        console.log(res.data);
-      });
+  @Get('getAccessToken')
+  async getAccessToken() {
+    return await this.wechatService.getAccessToken();
   }
 
   @Get('refresh')
   refreshAccessToken() {
-    console.log('refresh**');
-    this.getAccessToken();
+    return this.wechatService.fetchAccessToken();
   }
 }
