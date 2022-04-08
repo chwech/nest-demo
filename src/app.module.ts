@@ -6,6 +6,7 @@ import { UploadController } from './upload/upload.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Wechat } from './wechat/wechat.entity';
 import { WechatModule } from './wechat/wechat.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { WechatModule } from './wechat/wechat.module';
       entities: [Wechat],
       synchronize: true,
     }),
-
+    AuthModule,
     WechatModule,
   ],
   controllers: [AppController, GoodController, UploadController],

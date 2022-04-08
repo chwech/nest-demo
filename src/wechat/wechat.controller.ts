@@ -36,6 +36,8 @@ export class WechatController {
           MsgType: { _cdata: msgType },
           Content: { _cdata: content } = { _cdata: '' },
           Event: { _cdata: event } = { _cdata: '' },
+          PicUrl: { _cdata: picUrl } = { _cdata: '' },
+          MediaId: { _cdata: mediaId } = { _cdata: '' },
         },
       } = convert.xml2js(body, {
         compact: true,
@@ -80,6 +82,8 @@ export class WechatController {
         } else {
           res.status(200).send('');
         }
+      } else if (msgType === 'image') {
+        console.log(picUrl, mediaId);
       }
     } catch {
       res.status(200).send('');
