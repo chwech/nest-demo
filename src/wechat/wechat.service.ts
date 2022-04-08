@@ -18,9 +18,10 @@ export class WechatService {
     const wechat = new Wechat();
     wechat.id = 1;
     wechat.accessToken = res.data.access_token;
-    wechat.expiresIn = res.data.expires_in;
+    // 提前5分钟失效
+    wechat.expiresIn = res.data.expires_in - 300;
     wechat.expires = new Date(
-      Date.now() + res.data.expires_in * 1000,
+      Date.now() + wechat.expiresIn * 1000,
     ).toUTCString();
 
     this.wechatRepository.save(wechat);
