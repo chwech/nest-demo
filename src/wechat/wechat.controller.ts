@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  ForbiddenException,
+  Get,
+  Post,
+  Query,
+  Req,
+  Res,
+  UseFilters,
+  UsePipes,
+} from '@nestjs/common';
+import { HttpExceptionFilter } from 'src/exception/exception.filter';
+import { ValidatePipe } from 'src/pipe/validate.pipe';
 import { getReqRawBody, sha1 } from 'src/utils';
 import * as convert from 'xml-js';
 import { WechatService } from './wechat.service';
@@ -8,7 +20,11 @@ export class WechatController {
   constructor(private wechatService: WechatService) {}
 
   @Get('checkSignature')
+  @UsePipes(new ValidatePipe())
+  @UseFilters(new HttpExceptionFilter())
   checkSignature(@Query() query) {
+    console.log('控制器');
+
     const token = 'learnweichatdevelop';
     const { signature, echostr, timestamp, nonce } = query;
     // 1. 字典序排序
