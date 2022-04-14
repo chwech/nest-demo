@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './auth/local.strategy';
 import { JwtStrategy } from './auth/jwt.strategy';
+import { User } from './users/user.entity';
 
 @Module({
   // 导入模块的列表，这些模块导出了此模块中所需提供者
@@ -23,7 +24,8 @@ import { JwtStrategy } from './auth/jwt.strategy';
       username: 'root',
       password: 'admin_chwech',
       database: 'test',
-      entities: [Wechat],
+      // 实体列表
+      entities: [User, Wechat],
       synchronize: true,
     }),
     AuthModule,
