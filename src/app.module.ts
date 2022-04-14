@@ -11,8 +11,10 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
 import { UsersModule } from './users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './auth/local.strategy';
+import { JwtStrategy } from './auth/jwt.strategy';
 
 @Module({
+  // 导入模块的列表，这些模块导出了此模块中所需提供者
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -29,8 +31,12 @@ import { LocalStrategy } from './auth/local.strategy';
     WechatModule,
     UsersModule,
   ],
+
+  // 控制器
   controllers: [AppController, GoodController, UploadController],
-  providers: [AppService, LocalStrategy],
+
+  // 由 Nest 注入器实例化的提供者，并且可以至少在整个模块中共享
+  providers: [AppService, LocalStrategy, JwtStrategy],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

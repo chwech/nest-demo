@@ -1,7 +1,8 @@
 import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { LocalAuthGuard } from './auth/local-auth.guard';
 
 @Controller()
 export class AppController {
@@ -10,16 +11,17 @@ export class AppController {
     private readonly authService: AuthService,
   ) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @UseGuards(JwtAuthGuard)
+  @Get('user')
+  getUser(@Request() req): string {
+    return req.user;
   }
 
-  @UseGuards(AuthGuard('local'))
+  @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   async login(@Request() req) {
     console.log('登录**');
-
+    // 登录成功后, req对象上会挂上用户信息
     return this.authService.login(req.user);
   }
 }
