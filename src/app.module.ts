@@ -13,6 +13,8 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './auth/local.strategy';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { User } from './users/user.entity';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ResponseInterceptor } from './lib/response.interceptor';
 
 @Module({
   // 导入模块的列表，这些模块导出了此模块中所需提供者
@@ -38,7 +40,15 @@ import { User } from './users/user.entity';
   controllers: [AppController, GoodController, UploadController],
 
   // 由 Nest 注入器实例化的提供者，并且可以至少在整个模块中共享
-  providers: [AppService, LocalStrategy, JwtStrategy],
+  providers: [
+    AppService,
+    LocalStrategy,
+    JwtStrategy,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

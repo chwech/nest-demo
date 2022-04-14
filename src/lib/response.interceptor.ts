@@ -1,0 +1,33 @@
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { map, Observable } from 'rxjs';
+
+@Injectable()
+export class ResponseInterceptor implements NestInterceptor {
+  constructor(private reflector: Reflector) {}
+
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler<any>,
+  ): Observable<any> | Promise<Observable<any>> {
+    const statusText = this.reflector.get('statusText', context.getHandler());
+    console.log('before拦截器', statusText);
+
+    return next.handle().pipe(
+      map((data) => {
+        console.log('after拦截器', data);
+
+        return {
+          data,
+          status: 1,
+          msg: statusText || '操作成功',
+        };
+      }),
+    );
+  }
+}
