@@ -3,6 +3,7 @@ import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { LocalAuthGuard } from './auth/local-auth.guard';
+import { UserDto } from './users/users.dto';
 
 @Controller()
 export class AppController {
@@ -13,7 +14,7 @@ export class AppController {
 
   @UseGuards(JwtAuthGuard)
   @Get('user')
-  getUser(@Request() req): string {
+  getUser(@Request() req): UserDto {
     return req.user;
   }
 
