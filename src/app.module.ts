@@ -15,6 +15,10 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { User } from './users/user.entity';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './lib/response.interceptor';
+import { ArticleController } from './article/article.controller';
+import { ArticleService } from './article/article.service';
+import { ArticleModule } from './article/article.module';
+import { Article } from './article/entities/article.entity';
 
 @Module({
   // 导入模块的列表，这些模块导出了此模块中所需提供者
@@ -27,17 +31,23 @@ import { ResponseInterceptor } from './lib/response.interceptor';
       password: 'admin_chwech',
       database: 'test',
       // 实体列表
-      entities: [User, Wechat],
+      entities: [User, Wechat, Article],
       synchronize: true,
     }),
     AuthModule,
     PassportModule,
     WechatModule,
     UsersModule,
+    ArticleModule,
   ],
 
   // 控制器
-  controllers: [AppController, GoodController, UploadController],
+  controllers: [
+    AppController,
+    GoodController,
+    UploadController,
+    ArticleController,
+  ],
 
   // 由 Nest 注入器实例化的提供者，并且可以至少在整个模块中共享
   providers: [
@@ -48,6 +58,7 @@ import { ResponseInterceptor } from './lib/response.interceptor';
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
     },
+    ArticleService,
   ],
 })
 export class AppModule implements NestModule {
