@@ -6,7 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -20,6 +22,7 @@ export class ArticleController {
     return this.articleService.create(createArticleDto);
   }
 
+  // @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.articleService.findAll();
