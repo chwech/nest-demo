@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { AuthGuard } from './auth/auth.guard';
@@ -5,12 +6,14 @@ import { AuthGuard } from './auth/auth.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  const port = configService.get('port');
   // 允许跨域
   app.enableCors();
   // 绑定全局守卫
   app.useGlobalGuards(new AuthGuard());
   // 绑定全局拦截器
   // app.useGlobalInterceptors(new ResponseInterceptor());
-  await app.listen(3000);
+  await app.listen(port);
 }
 bootstrap();
