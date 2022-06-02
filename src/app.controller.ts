@@ -6,6 +6,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
@@ -18,6 +19,7 @@ export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly authService: AuthService,
+    private readonly configService: ConfigService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -35,5 +37,17 @@ export class AppController {
     console.log('登录**');
     // 登录成功后, req对象上会挂上用户信息
     return this.authService.login(req.user);
+  }
+
+  @Get('test')
+  async test() {
+    // await new Promise((resolve) => {
+    //   setTimeout(() => {
+    //     resolve(1);
+    //   }, 5000);
+    // });
+    const user = this.configService.get<string>('db.mysql.host');
+    console.log('NODE_ENV', process.env.NODE_ENV);
+    return user;
   }
 }

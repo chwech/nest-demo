@@ -19,20 +19,31 @@ import { ArticleModule } from './article/article.module';
 import { Article } from './article/entities/article.entity';
 import { CategoryModule } from './category/category.module';
 import { Category } from './category/entities/category.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { getEnvFilePath } from './utils/env';
+import configuration from './config/configuration';
 
 @Module({
   // 导入模块的列表，这些模块导出了此模块中所需提供者
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'admin_chwech',
-      database: 'test',
-      // 实体列表
-      entities: [User, Wechat, Article, Category],
-      synchronize: true,
+    ConfigModule.forRoot({
+      envFilePath: getEnvFilePath(),
+      load: [configuration],
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configSerivce: ConfigService) => ({
+        type: 'mysql',
+        host: configSerivce.get('db.mysql.host'),
+        port: configSerivce.get('db.mysql.port'),
+        username: configSerivce.get('db.mysql.username'),
+        password: configSerivce.get('db.mysql.password'),
+        database: configSerivce.get('db.mysql.database'),
+        // 实体列表
+        entities: [User, Wechat, Article, Category],
+        synchronize: true,
+      }),
+      inject: [ConfigService],
     }),
     AuthModule,
     PassportModule,
