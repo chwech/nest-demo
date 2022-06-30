@@ -9,15 +9,16 @@ import { Category } from './entities/category.entity';
 export class CategoryService {
   constructor(
     @InjectRepository(Category)
-    private articleRepository: Repository<Category>,
+    private categoryRepository: Repository<Category>,
   ) {}
 
   create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+    return this.categoryRepository.save(createCategoryDto);
   }
 
   findAll() {
-    return `This action returns all category`;
+    return this.categoryRepository.find();
+    // return `This action returns all category`;
   }
 
   findOne(id: number) {

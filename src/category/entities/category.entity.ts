@@ -8,6 +8,8 @@ export class Category {
   @Column()
   name: string;
 
-  @Column()
+  @Column({
+    default: 0,
+  })
   pid: number;
 }

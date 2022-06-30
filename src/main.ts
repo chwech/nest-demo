@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -14,6 +15,9 @@ async function bootstrap() {
   app.useGlobalGuards(new AuthGuard());
   // 绑定全局拦截器
   // app.useGlobalInterceptors(new ResponseInterceptor());
+
+  // 验证请求数据
+  app.useGlobalPipes(new ValidationPipe());
   await app.listen(port);
 }
 bootstrap();
