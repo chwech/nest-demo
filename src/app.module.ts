@@ -22,13 +22,16 @@ import { Category } from './category/entities/category.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getEnvFilePath } from './utils/env';
 import configuration from './config/configuration';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   // 导入模块的列表，这些模块导出了此模块中所需提供者
   imports: [
+    // 配置模块（环境变量）
     ConfigModule.forRoot({
       envFilePath: getEnvFilePath(),
       load: [configuration],
+      isGlobal: true, // 注册为全局模块，使用configService在全局可用，不需要到时导入
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -51,10 +54,11 @@ import configuration from './config/configuration';
     UsersModule,
     ArticleModule,
     CategoryModule,
+    UploadModule,
   ],
 
   // 控制器
-  controllers: [AppController, GoodController, UploadController],
+  controllers: [AppController, GoodController],
 
   // 由 Nest 注入器实例化的提供者，并且可以至少在整个模块中共享
   // 将提供者放在providers数组里，nest才能正确执行注入
@@ -67,6 +71,10 @@ import configuration from './config/configuration';
       useClass: ResponseInterceptor,
     },
   ],
+
+  // 由本模块提供并应在其他模块中可用的提供者的子集。
+  // 从模块导出的提供程序(提供者)视为模块的公共接口或API。
+  // exports: []
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

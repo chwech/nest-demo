@@ -7,8 +7,11 @@ import { AuthGuard } from './auth/auth.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // 获取端口配置
   const configService = app.get(ConfigService);
   const port = configService.get('port');
+
   // 允许跨域
   app.enableCors();
   // 绑定全局守卫

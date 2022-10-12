@@ -5,12 +5,15 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
 import * as qiniu from 'qiniu';
 
 @Controller('upload')
 export class UploadController {
+  constructor(private readonly configService: ConfigService) {}
+
   @UseInterceptors(
     FileInterceptor('file', {
       storage: multer.diskStorage({
@@ -37,8 +40,9 @@ export class UploadController {
 
   @Get('token')
   token() {
-    const accessKey = '_V0UGMIRy_bOG5mG20ZXALwq8zcRt5sOObDzNwXg';
-    const secretKey = 'xUU4q3HQ66eV9KyCqnhvxVUNMxJ-LMmKKN4qztT5';
+    const accessKey = this.configService.get('qiniu.ak');
+    const secretKey = this.configService.get('qiniu.sk');
+
     const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
     const options = {
       scope: 'www-chwech-com',

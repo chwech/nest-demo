@@ -9,4 +9,8 @@ export default () => ({
       database: process.env.MYSQL_DATABASE || 'test',
     },
   },
+  qiniu: {
+    ak: process.env.QINIU_ACCESSKEY,
+    sk: process.env.QINIU_SECRETKEY,
+  },
 });
