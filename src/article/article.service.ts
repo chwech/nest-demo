@@ -17,7 +17,15 @@ export class ArticleService {
   }
 
   async findAll() {
-    return await this.articleRepository.find();
+    const [list, total] = await this.articleRepository.findAndCount({
+      skip: 0,
+      take: 2,
+    });
+
+    return {
+      data: list,
+      total,
+    };
   }
 
   findOne(id: number) {
