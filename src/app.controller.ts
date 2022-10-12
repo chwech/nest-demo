@@ -39,6 +39,7 @@ export class AppController {
     return this.authService.login(req.user);
   }
 
+  // 控制器负责处理传入的请求和向官方端返回响应
   @Get('test')
   async test() {
     // await new Promise((resolve) => {
