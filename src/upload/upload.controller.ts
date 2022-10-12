@@ -1,11 +1,33 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as multer from 'multer';
 import * as qiniu from 'qiniu';
+
 @Controller('upload')
 export class UploadController {
-  @Post()
-  upload(@Body() body) {
-    console.log(body);
-    return { code: 200 };
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: multer.diskStorage({
+        destination: function (req, file, cb) {
+          cb(null, 'upload/');
+        },
+        filename: function (req, file, cb) {
+          cb(null, file.originalname);
+        },
+      }),
+    }),
+  )
+  @Post('file')
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    console.log('file', file);
+
+    return file.originalname;
   }
 
   @Post()

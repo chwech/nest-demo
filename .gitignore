@@ -36,3 +36,6 @@ lerna-debug.log*
 
 # 环境变量不提交
 /env
+
+# 上传文件夹
+/upload
