@@ -51,4 +51,9 @@ export class AppController {
     console.log('NODE_ENV', process.env.NODE_ENV);
     return user;
   }
+
+  @Get('/')
+  async index() {
+    return 'hello nest.js'
+  }
 }

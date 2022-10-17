@@ -23,6 +23,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getEnvFilePath } from './utils/env';
 import configuration from './config/configuration';
 import { UploadModule } from './upload/upload.module';
+import { ItemModule } from './item/item.module';
+import { Item } from './item/entities/item.entity';
 
 @Module({
   // 导入模块的列表，这些模块导出了此模块中所需提供者
@@ -43,7 +45,7 @@ import { UploadModule } from './upload/upload.module';
         password: configSerivce.get('db.mysql.password'),
         database: configSerivce.get('db.mysql.database'),
         // 实体列表
-        entities: [User, Wechat, Article, Category],
+        entities: [User, Wechat, Article, Category, Item],
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -55,6 +57,7 @@ import { UploadModule } from './upload/upload.module';
     ArticleModule,
     CategoryModule,
     UploadModule,
+    ItemModule,
   ],
 
   // 控制器
