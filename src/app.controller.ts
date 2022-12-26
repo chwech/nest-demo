@@ -54,6 +54,6 @@ export class AppController {
 
   @Get('/')
   async index() {
-    return 'hello nest.js'
+    return 'hello nest.js';
   }
 }
