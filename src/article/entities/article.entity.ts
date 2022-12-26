@@ -13,9 +13,13 @@ export class Article {
   @Column()
   content: string;
 
-  @Column('timestamp')
+  @Column('timestamp', {
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   create_at: string;
 
-  @Column('timestamp')
+  @Column('timestamp', {
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   update_at: string;
 }
