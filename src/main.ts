@@ -19,8 +19,15 @@ async function bootstrap() {
   // 绑定全局拦截器
   // app.useGlobalInterceptors(new ResponseInterceptor());
 
-  // 验证请求数据
-  app.useGlobalPipes(new ValidationPipe());
+  // 验证请求数据, 配合dto和class-validator
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
   await app.listen(port);
 }
+
 bootstrap();

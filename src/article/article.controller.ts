@@ -12,6 +12,7 @@ import {
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
+import { QueryArticleDto } from './dto/query-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Controller('article')
@@ -21,12 +22,13 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createArticleDto: CreateArticleDto) {
+    console.log(createArticleDto);
     return this.articleService.create(createArticleDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(@Query() query) {
+  findAll(@Query() query: QueryArticleDto) {
     return this.articleService.findAll(query);
   }
 
@@ -41,7 +43,8 @@ export class ArticleController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.articleService.remove(+id);
+  remove(@Param('id') id: number) {
+    console.log('id---', id);
+    return this.articleService.remove(id);
   }
 }

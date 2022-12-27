@@ -25,10 +25,12 @@ import configuration from './config/configuration';
 import { UploadModule } from './upload/upload.module';
 import { ItemModule } from './item/item.module';
 import { Item } from './item/entities/item.entity';
-
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   // 导入模块的列表，这些模块导出了此模块中所需提供者
   imports: [
+    // 定时任务
+    ScheduleModule.forRoot(),
     // 配置模块（环境变量）
     ConfigModule.forRoot({
       envFilePath: getEnvFilePath(),

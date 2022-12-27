@@ -22,16 +22,15 @@ export class ArticleService {
   }
 
   async findAll(options: PageParams) {
-    console.log(options, 'options');
     const [data, total] = await this.articleRepository.findAndCount({
-      skip: (Number(options.page) - 1) * Number(options.per_page),
-      take: Number(options.per_page),
+      skip: (options.page - 1) * options.per_page,
+      take: options.per_page,
     });
 
     return {
       data,
       total,
-      current_page: Number(options.page),
+      current_page: options.page,
     };
   }
 
@@ -43,7 +42,7 @@ export class ArticleService {
     return `This action updates a #${id} article`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} article`;
+  async remove(id: number) {
+    return await this.articleRepository.delete(id);
   }
 }

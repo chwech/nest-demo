@@ -13,6 +13,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { StatusText } from './lib/statusText.decorator';
 import { UserDto } from './users/users.dto';
+import { Cron } from '@nestjs/schedule';
 
 @Controller()
 export class AppController {
@@ -40,16 +41,18 @@ export class AppController {
   }
 
   // 控制器负责处理传入的请求和向官方端返回响应
-  @Get('test')
+  // @Get('test')
+  @Cron('45 * * * * *')
   async test() {
+    console.log('console.log 45s');
     // await new Promise((resolve) => {
     //   setTimeout(() => {
     //     resolve(1);
     //   }, 5000);
     // });
-    const user = this.configService.get<string>('db.mysql.host');
-    console.log('NODE_ENV', process.env.NODE_ENV);
-    return user;
+    // const user = this.configService.get<string>('db.mysql.host');
+    // console.log('NODE_ENV', process.env.NODE_ENV);
+    // return user;
   }
 
   @Get('/')
