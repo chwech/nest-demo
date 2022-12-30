@@ -11,4 +11,13 @@ import { IsNotEmpty } from 'class-validator';
 export class CreateCategoryDto {
   @IsNotEmpty()
   readonly name: string;
+
+  @IsNotEmpty()
+  readonly description: string;
+
+  @IsNotEmpty()
+  readonly parentId: number;
+
+  @IsNotEmpty()
+  readonly slug: string;
 }

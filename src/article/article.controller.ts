@@ -38,13 +38,12 @@ export class ArticleController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto) {
-    return this.articleService.update(+id, updateArticleDto);
+  update(@Param('id') id: number, @Body() updateArticleDto: UpdateArticleDto) {
+    return this.articleService.update(id, updateArticleDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: number) {
-    console.log('id---', id);
     return this.articleService.remove(id);
   }
 }

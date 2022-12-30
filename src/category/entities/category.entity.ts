@@ -1,6 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  Tree,
+  TreeChildren,
+  TreeParent,
+} from 'typeorm';
 
 @Entity()
+@Tree('closure-table')
 export class Category {
   @PrimaryGeneratedColumn()
   id: number;
@@ -8,8 +16,15 @@ export class Category {
   @Column()
   name: string;
 
-  @Column({
-    default: 0,
-  })
-  pid: number;
+  @Column()
+  description: string;
+
+  @Column()
+  slug: string;
+
+  @TreeParent()
+  parent: Category;
+
+  @TreeChildren()
+  children: Category[];
 }
