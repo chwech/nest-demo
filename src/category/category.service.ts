@@ -31,7 +31,52 @@ export class CategoryService {
     return `This action updates a #${id} category`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number) {
+    const result = await this.entityManager.transaction(
+      async (tem: EntityManager) => {
+        const categoryRepository = tem.getRepository(Category);
+        const metadata = categoryRepository.metadata;
+
+        const table =
+          metadata.closureJunctionTable.ancestorColumns[0].entityMetadata
+            .tableName;
+        const ancestor =
+          metadata.closureJunctionTable.ancestorColumns[0].databasePath;
+        const descendant =
+          metadata.closureJunctionTable.descendantColumns[0].databasePath;
+
+        // 找到子代ids
+        const nodes = await tem
+          .createQueryBuilder()
+          .select(descendant)
+          .from(table, 'closure')
+          .where(`${ancestor} = :id`, { id: id })
+          .getRawMany();
+
+        const nodeIds = nodes.map((v) => v[descendant]).filter((v) => v !== id);
+
+        // 要删除节点的父节点
+        const parent = await tem
+          .createQueryBuilder()
+          .relation(Category, 'parent')
+          .of(id)
+          .loadOne();
+
+        // 删除节点
+        await categoryRepository.delete(id);
+
+        if (parent) {
+          // 将子代父节点设置为要删除节点的父节点
+          await tem
+            .createQueryBuilder()
+            .relation(Category, 'parent')
+            .of(nodeIds)
+            .set(parent);
+        }
+
+        return id;
+      },
+    );
+    return result;
   }
 }

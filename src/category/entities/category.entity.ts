@@ -22,7 +22,9 @@ export class Category {
   @Column()
   slug: string;
 
-  @TreeParent()
+  @TreeParent({
+    onDelete: 'SET NULL',
+  })
   parent: Category;
 
   @TreeChildren()
