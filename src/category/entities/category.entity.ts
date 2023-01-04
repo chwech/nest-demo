@@ -1,3 +1,4 @@
+import { Exclude, Expose } from 'class-transformer';
 import {
   Column,
   Entity,
@@ -22,6 +23,7 @@ export class Category {
   @Column()
   slug: string;
 
+  @Exclude()
   @TreeParent({
     onDelete: 'SET NULL',
   })
@@ -29,4 +31,9 @@ export class Category {
 
   @TreeChildren()
   children: Category[];
+
+  @Expose()
+  get parentId() {
+    return this.parent?.id ?? 0;
+  }
 }

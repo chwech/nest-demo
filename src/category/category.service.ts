@@ -13,22 +13,24 @@ export class CategoryService {
     private categoryRepository: Repository<Category>,
   ) {}
 
-  async create({ parentId, ...category }: CreateCategoryDto) {
-    const parent = await this.categoryRepository.findOne(parentId);
-    const newCategory = { parent, ...category };
-    return this.categoryRepository.save(newCategory);
+  create(createCategoryDto: CreateCategoryDto) {
+    return this.update(null, createCategoryDto);
   }
 
   findAll() {
-    return this.entityManager.getTreeRepository(Category).findTrees();
+    return this.entityManager.getTreeRepository(Category).findTrees({
+      relations: ['parent'],
+    });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} category`;
+    return this.categoryRepository.findOne(id);
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    const parent = await this.findOne(updateCategoryDto.parentId);
+    const newCategory = { parent, ...updateCategoryDto, id };
+    return this.categoryRepository.save(newCategory);
   }
 
   async remove(id: number) {

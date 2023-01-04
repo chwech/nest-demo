@@ -1,6 +1,6 @@
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { AuthGuard } from './auth/auth.guard';
 // import { ResponseInterceptor } from './lib/response.interceptor';
@@ -18,7 +18,8 @@ async function bootstrap() {
   app.useGlobalGuards(new AuthGuard());
   // 绑定全局拦截器
   // app.useGlobalInterceptors(new ResponseInterceptor());
-
+  // 序列化
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   // 验证请求数据, 配合dto和class-validator
   app.useGlobalPipes(
     new ValidationPipe({
