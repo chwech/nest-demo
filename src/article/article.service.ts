@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CategoryService } from 'src/category/category.service';
 import { Repository } from 'typeorm';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -15,16 +16,22 @@ export class ArticleService {
   constructor(
     @InjectRepository(Article)
     private articleRepository: Repository<Article>,
+    private categoryService: CategoryService,
   ) {}
 
-  async create(createArticleDto: CreateArticleDto) {
-    return await this.articleRepository.insert(createArticleDto);
+  async create({ categoryId, ...articleDto }: CreateArticleDto) {
+    const article = new Article(articleDto);
+    const category = await this.categoryService.findOne(categoryId);
+    article.category = category;
+
+    return await this.articleRepository.save(article);
   }
 
   async findAll(options: PageParams) {
     const [data, total] = await this.articleRepository.findAndCount({
       skip: (options.page - 1) * options.per_page,
       take: options.per_page,
+      relations: ['category'],
     });
 
     return {

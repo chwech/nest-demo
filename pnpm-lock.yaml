@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@hapi/joi': ^17.1.1
+  '@nestjs/axios': ^1.0.1
   '@nestjs/cli': ^8.0.0
   '@nestjs/common': ^8.0.0
   '@nestjs/config': ^2.0.1
@@ -25,7 +26,7 @@ specifiers:
   '@types/supertest': ^2.0.11
   '@typescript-eslint/eslint-plugin': ^5.0.0
   '@typescript-eslint/parser': ^5.0.0
-  axios: ^0.26.1
+  axios: 1.2.1
   class-transformer: ^0.5.1
   class-validator: ^0.13.2
   cross-env: ^7.0.3
@@ -58,6 +59,7 @@ specifiers:
 
 dependencies:
   '@hapi/joi': 17.1.1
+  '@nestjs/axios': 1.0.1_q6tehokzwy3z4akuawpn6kiwbe
   '@nestjs/common': 8.4.7_ufuujcqbszwis444rmt5m3dshy
   '@nestjs/config': 2.2.0_q6tehokzwy3z4akuawpn6kiwbe
   '@nestjs/core': 8.4.7_tdkocbskemo2uwka4xhsbznrba
@@ -67,7 +69,7 @@ dependencies:
   '@nestjs/platform-express': 8.4.7_7tsmhnugyerf5okgqzer2mfqme
   '@nestjs/schedule': 2.1.0_zysgbzrbqurgi5bpxpfkrj3lie
   '@nestjs/typeorm': 8.1.4_anb6nny4i6boduy4z6qrd2iski
-  axios: 0.26.1
+  axios: 1.2.1
   class-transformer: 0.5.1
   class-validator: 0.13.2
   js-yaml: 4.1.0
@@ -900,6 +902,21 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
+
+  /@nestjs/axios/1.0.1_q6tehokzwy3z4akuawpn6kiwbe:
+    resolution: {integrity: sha512-TpoZM/0ZJ9xiC04qkRDFod93LCZ12TQARRU3ejDvBK2E8emvzM4HThOs5ePklVxce4Q1ZsnrIWqnImvoDmJYnQ==}
+    peerDependencies:
+      '@nestjs/common': ^7.0.0 || ^8.0.0 || ^9.0.0
+      reflect-metadata: ^0.1.12
+      rxjs: ^6.0.0 || ^7.0.0
+    dependencies:
+      '@nestjs/common': 8.4.7_ufuujcqbszwis444rmt5m3dshy
+      axios: 1.2.1
+      reflect-metadata: 0.1.13
+      rxjs: 7.8.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
 
   /@nestjs/cli/8.2.8:
     resolution: {integrity: sha512-y5Imcw1EY0OxD3POAM7SLUB1rFdn5FjbfSsyJrokjKmXY+i6KcBdbRrv3Ox7aeJ4W7wXuckIXZEUlK6lC52dnA==}
@@ -1892,14 +1909,6 @@ packages:
   /asynckit/0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
 
-  /axios/0.26.1:
-    resolution: {integrity: sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==}
-    dependencies:
-      follow-redirects: 1.15.2
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
   /axios/0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
@@ -1907,6 +1916,16 @@ packages:
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
+
+  /axios/1.2.1:
+    resolution: {integrity: sha512-I88cFiGu9ryt/tfVEi4kX2SITsvDddTajXTOFmt2uK1ZVA8LytjtdeyefdQWEf5PU8w+4SSJDoYnggflB5tW4A==}
+    dependencies:
+      follow-redirects: 1.15.2
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
 
   /babel-jest/27.5.1_@babel+core@7.20.7:
     resolution: {integrity: sha512-cdQ5dXjGRd0IBRATiQ4mZGlGlRE8kJpjPOixdNRdT+m3UcNqmYWN6rK6nvtXYfY3D76cb8s/O1Ss8ea24PIwcg==}

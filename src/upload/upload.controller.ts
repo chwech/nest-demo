@@ -2,17 +2,19 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
-import * as qiniu from 'qiniu';
+import { QueryQiniuTokenDto } from './dto/query-qiniu-token.dto';
+import { UploadService } from './upload.service';
+import { AxiosResponse } from 'axios';
 
 @Controller('upload')
 export class UploadController {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly uploadService: UploadService) {}
 
   @UseInterceptors(
     FileInterceptor('file', {
@@ -39,15 +41,12 @@ export class UploadController {
   }
 
   @Get('token')
-  token() {
-    const accessKey = this.configService.get('qiniu.ak');
-    const secretKey = this.configService.get('qiniu.sk');
+  token(@Query() query: QueryQiniuTokenDto) {
+    return this.uploadService.getQiniuToken(query);
+  }
 
-    const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
-    const options = {
-      scope: 'www-chwech-com',
-    };
-    const putPolicy = new qiniu.rs.PutPolicy(options);
-    return putPolicy.uploadToken(mac);
+  @Get('domains')
+  async getQiniuDomains(@Query('bucketName') bucketName: string) {
+    return await this.uploadService.getQiniuDomains(bucketName);
   }
 }
