@@ -6,5 +6,6 @@ import { HttpModule } from '@nestjs/axios';
   imports: [HttpModule],
   controllers: [UploadController],
   providers: [UploadService],
+  exports: [UploadService],
 })
 export class UploadModule {}

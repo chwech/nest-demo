@@ -1,6 +1,6 @@
 import { IsInt, IsPositive } from 'class-validator';
 
-export class QueryArticleDto {
+export class QueryMediaDto {
   @IsPositive()
   @IsInt()
   readonly page: number = 1;

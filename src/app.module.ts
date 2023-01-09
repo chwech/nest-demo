@@ -2,7 +2,6 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GoodController } from './good/good.controller';
-import { UploadController } from './upload/upload.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Wechat } from './wechat/wechat.entity';
 import { WechatModule } from './wechat/wechat.module';
@@ -26,6 +25,8 @@ import { UploadModule } from './upload/upload.module';
 import { ItemModule } from './item/item.module';
 import { Item } from './item/entities/item.entity';
 import { ScheduleModule } from '@nestjs/schedule';
+import { MediaModule } from './media/media.module';
+import { Media } from './media/entities/media.entity';
 @Module({
   // 导入模块的列表，这些模块导出了此模块中所需提供者
   imports: [
@@ -47,7 +48,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         password: configSerivce.get('db.mysql.password'),
         database: configSerivce.get('db.mysql.database'),
         // 实体列表
-        entities: [User, Wechat, Article, Category, Item],
+        entities: [User, Wechat, Article, Category, Item, Media],
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -60,6 +61,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     CategoryModule,
     UploadModule,
     ItemModule,
+    MediaModule,
   ],
 
   // 控制器
