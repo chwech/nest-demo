@@ -3,8 +3,11 @@ import {
   Get,
   HttpCode,
   Post,
+  Render,
   Request,
+  Sse,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppService } from './app.service';
@@ -14,6 +17,8 @@ import { LocalAuthGuard } from './auth/local-auth.guard';
 import { StatusText } from './lib/statustext.decorator';
 import { UserDto } from './users/users.dto';
 import { Cron } from '@nestjs/schedule';
+import { Observable, interval, map } from 'rxjs';
+import { ExcludeResIntercept } from './lib/exclude.response.intercept.decorator';
 
 @Controller()
 export class AppController {
@@ -22,6 +27,13 @@ export class AppController {
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
   ) {}
+
+  @Get()
+  @Render('index')
+  @ExcludeResIntercept()
+  root() {
+    return { message: 'hello nest' };
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get('user')
@@ -55,8 +67,13 @@ export class AppController {
     // return user;
   }
 
-  @Get('/')
-  async index() {
-    return 'hello nest.js';
+  // @Get('/')
+  // async index() {
+  //   return 'hello nest.js';
+  // }
+
+  @Sse('sse')
+  sse(): Observable<any> {
+    return interval(1000).pipe(map((_) => ({ data: { hello: 'world' } })));
   }
 }

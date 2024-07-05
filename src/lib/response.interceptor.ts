@@ -15,18 +15,28 @@ export class ResponseInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
+    // 从当前路径处理程序中获取元数据
     const statusText = this.reflector.get('statusText', context.getHandler());
+    const isExclude = this.reflector.get(
+      'excludeResInterceptor',
+      context.getHandler(),
+    );
+
     console.log('before拦截器', statusText);
 
     return next.handle().pipe(
       map((data) => {
         console.log('after拦截器', data);
 
-        return {
-          data,
-          status: 1,
-          msg: statusText || '操作成功',
-        };
+        if (isExclude) {
+          return data;
+        } else {
+          return {
+            data,
+            status: 1,
+            msg: statusText || '操作成功',
+          };
+        }
       }),
     );
   }
