@@ -2,7 +2,9 @@ import {
   Controller,
   Get,
   HttpCode,
+  Param,
   Post,
+  Query,
   Render,
   Request,
   Sse,
@@ -19,6 +21,7 @@ import { UserDto } from './users/users.dto';
 import { Cron } from '@nestjs/schedule';
 import { Observable, interval, map } from 'rxjs';
 import { ExcludeResIntercept } from './lib/exclude.response.intercept.decorator';
+import { UsersService } from './users/users.service';
 
 @Controller()
 export class AppController {
@@ -26,6 +29,7 @@ export class AppController {
     private readonly appService: AppService,
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
+    private readonly userService: UsersService,
   ) {}
 
   @Get()
@@ -33,6 +37,12 @@ export class AppController {
   @ExcludeResIntercept()
   root() {
     return { message: 'hello nest' };
+  }
+
+  @Get('register')
+  createUser(@Query() params) {
+    console.log('register', params);
+    return this.userService.create(params);
   }
 
   @UseGuards(JwtAuthGuard)
