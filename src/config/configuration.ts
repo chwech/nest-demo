@@ -13,4 +13,8 @@ export default () => ({
     ak: process.env.QINIU_ACCESSKEY,
     sk: process.env.QINIU_SECRETKEY,
   },
+  aes: {
+    password: process.env.AES_PASSWORD,
+    salt: process.env.AES_SALT,
+  },
 });

@@ -8,8 +8,11 @@ export class User {
   @Column()
   username: string;
 
-  @Column()
+  @Column({ type: 'text' })
   password: string;
+
+  @Column()
+  iv: string;
 
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);
