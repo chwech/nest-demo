@@ -17,4 +17,8 @@ export default () => ({
     password: process.env.AES_PASSWORD,
     salt: process.env.AES_SALT,
   },
+  wechat: {
+    appid: process.env.WECHAT_APPID,
+    appsecret: process.env.WECHAT_APPSECRET,
+  },
 });

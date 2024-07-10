@@ -3,17 +3,22 @@ import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import { Repository } from 'typeorm';
 import { Wechat } from './wechat.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class WechatService {
   constructor(
     @InjectRepository(Wechat)
     private wechatRepository: Repository<Wechat>,
+    private readonly configService: ConfigService,
   ) {}
 
   async fetchAccessToken() {
+    const appid = this.configService.get('wechat.appid');
+    const appsecret = this.configService.get('wechat.appsecret');
+
     const res = await axios.get(
-      'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxf5e91d9a8d1511ec&secret=49caebd69e9959cf8b12a108cf46d7b5',
+      `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${appsecret}`,
     );
     const wechat = new Wechat();
     wechat.id = 1;
