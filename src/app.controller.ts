@@ -68,7 +68,7 @@ export class AppController {
   // @Get('test')
   @Cron('45 * * * * *')
   async test() {
-    console.log('console.log 45s');
+    // console.log('console.log 45s');
     // await new Promise((resolve) => {
     //   setTimeout(() => {
     //     resolve(1);

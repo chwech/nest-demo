@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Query,
+  Render,
   Req,
   Res,
   UseFilters,
@@ -13,6 +14,8 @@ import { ValidatePipe } from 'src/pipe/validate.pipe';
 import { getReqRawBody, sha1 } from 'src/utils';
 import * as convert from 'xml-js';
 import { WechatService } from './wechat.service';
+import { ExcludeResIntercept } from 'src/lib/exclude.response.intercept.decorator';
+import { firstValueFrom, map, of } from 'rxjs';
 
 @Controller('wechat')
 export class WechatController {
@@ -21,6 +24,7 @@ export class WechatController {
   @Get('checkSignature')
   @UsePipes(new ValidatePipe())
   @UseFilters(new HttpExceptionFilter())
+  @ExcludeResIntercept()
   checkSignature(@Query() query) {
     console.log('控制器');
 
@@ -58,7 +62,15 @@ export class WechatController {
         compact: true,
       }) as { xml: { [prop: string]: any } };
 
-      console.log('body', body, toUserName, fromUserName, msgType, content);
+      console.log(
+        'body',
+        body,
+        toUserName,
+        fromUserName,
+        msgType,
+        content,
+        event,
+      );
       if (msgType === 'event') {
         if (event === 'subscribe') {
           const responseData = {
@@ -77,6 +89,15 @@ export class WechatController {
             spaces: 2,
           });
           res.status(200).send(xml);
+        }
+        switch (event) {
+          case 'subscribe':
+            break;
+          case 'SCAN':
+            console.log('扫码');
+            break;
+          default:
+            break;
         }
       } else if (msgType === 'text') {
         const responseData = {
@@ -113,5 +134,12 @@ export class WechatController {
   @Get('refresh')
   refreshAccessToken() {
     return this.wechatService.fetchAccessToken();
+  }
+
+  @Get('qrcode/create')
+  @Render('index')
+  @ExcludeResIntercept()
+  async createQrcode() {
+    return this.wechatService.getQrcodeTicket();
   }
 }

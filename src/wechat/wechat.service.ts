@@ -4,6 +4,8 @@ import axios from 'axios';
 import { Repository } from 'typeorm';
 import { Wechat } from './wechat.entity';
 import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
+import { concat, concatMap, map } from 'rxjs';
 
 @Injectable()
 export class WechatService {
@@ -11,6 +13,7 @@ export class WechatService {
     @InjectRepository(Wechat)
     private wechatRepository: Repository<Wechat>,
     private readonly configService: ConfigService,
+    private readonly httpService: HttpService,
   ) {}
 
   async fetchAccessToken() {
@@ -46,5 +49,17 @@ export class WechatService {
     } else {
       return this.fetchAccessToken();
     }
+  }
+
+  async getQrcodeTicket() {
+    const accessToken = await this.getAccessToken();
+    const url = `https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=${accessToken}`;
+    return this.httpService
+      .post(url, {
+        expire_seconds: 604800,
+        action_name: 'QR_SCENE',
+        action_info: { scene: { scene_id: 123 } },
+      })
+      .pipe(map((res) => res.data));
   }
 }
