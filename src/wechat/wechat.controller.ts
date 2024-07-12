@@ -15,20 +15,23 @@ import { getReqRawBody, sha1 } from 'src/utils';
 import * as convert from 'xml-js';
 import { WechatService } from './wechat.service';
 import { ExcludeResIntercept } from 'src/lib/exclude.response.intercept.decorator';
-import { firstValueFrom, map, of } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
+import { WechatCommonService } from './common/common.service';
 
 @Controller('wechat')
 export class WechatController {
-  constructor(private wechatService: WechatService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly wechatService: WechatService,
+    private readonly wechatCommonService: WechatCommonService,
+  ) {}
 
   @Get('checkSignature')
   @UsePipes(new ValidatePipe())
   @UseFilters(new HttpExceptionFilter())
   @ExcludeResIntercept()
   checkSignature(@Query() query) {
-    console.log('控制器');
-
-    const token = 'learnweichatdevelop';
+    const token = this.configService.get('wechat.token');
     const { signature, echostr, timestamp, nonce } = query;
     // 1. 字典序排序
     const array = [token, timestamp, nonce];
@@ -141,5 +144,10 @@ export class WechatController {
   @ExcludeResIntercept()
   async createQrcode() {
     return this.wechatService.getQrcodeTicket();
+  }
+
+  @Get('ip')
+  async getIp() {
+    return this.wechatCommonService.getApiDomainIp();
   }
 }

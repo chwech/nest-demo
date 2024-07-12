@@ -20,5 +20,6 @@ export default () => ({
   wechat: {
     appid: process.env.WECHAT_APPID,
     appsecret: process.env.WECHAT_APPSECRET,
+    token: process.env.WECHAT_TOKEN,
   },
 });
