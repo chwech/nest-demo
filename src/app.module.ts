@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  CacheModule,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GoodController } from './good/good.controller';
@@ -27,6 +32,7 @@ import { Item } from './item/entities/item.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MediaModule } from './media/media.module';
 import { Media } from './media/entities/media.entity';
+import { FeiShuModule } from './feishu/feishu.module';
 @Module({
   // 导入模块的列表，这些模块导出了此模块中所需提供者
   imports: [
@@ -62,6 +68,8 @@ import { Media } from './media/entities/media.entity';
     UploadModule,
     ItemModule,
     MediaModule,
+    FeiShuModule,
+    CacheModule.register(),
   ],
 
   // 控制器
