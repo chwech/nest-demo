@@ -68,7 +68,7 @@ export class FeishuService {
       data: { data },
     } = await firstValueFrom(
       this.httpService
-        .get(url, {
+        .get<any>(url, {
           headers: {
             Authorization: 'Bearer ' + accessToken,
           },
@@ -81,6 +81,43 @@ export class FeishuService {
           }),
         ),
     );
+    return data;
+  }
+
+  async sendTextMessage(receiveId, text) {
+    const accessToken = await this.getAccessToken();
+    const url = 'https://open.feishu.cn/open-apis/im/v1/messages';
+
+    const {
+      data: { data },
+    } = await firstValueFrom(
+      this.httpService
+        .post(
+          url,
+          {
+            receive_id: receiveId,
+            msg_type: 'text',
+            content: JSON.stringify({ text }),
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + accessToken,
+              'Content-Type': 'application/json',
+            },
+            params: {
+              receive_id_type: 'chat_id',
+            },
+          },
+        )
+        .pipe(
+          catchError((error: AxiosError) => {
+            // this.logger.error(error.response.data);
+            console.log(error);
+            throw 'An error happened!';
+          }),
+        ),
+    );
+
     return data;
   }
 }

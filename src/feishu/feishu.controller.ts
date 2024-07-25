@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ExcludeResIntercept } from 'src/lib/exclude.response.intercept.decorator';
 import { ConfigService } from '@nestjs/config';
 import { FeishuService } from './feishu.service';
@@ -20,5 +20,10 @@ export class FeiShuController {
   @Get('accessToken')
   async getBotGroupList() {
     return this.feishuService.getBotGroupList();
+  }
+
+  @Get('sendText')
+  async sendTextMessage(@Query() query) {
+    return this.feishuService.sendTextMessage(query.receiveId, query.text);
   }
 }
