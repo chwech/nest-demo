@@ -22,4 +22,8 @@ export default () => ({
     appsecret: process.env.WECHAT_APPSECRET,
     token: process.env.WECHAT_TOKEN,
   },
+  feishu: {
+    appid: process.env.FEISHU_APPID,
+    appsecret: process.env.FEISHU_APPSECRET,
+  },
 });

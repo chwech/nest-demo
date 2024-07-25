@@ -69,7 +69,9 @@ import { FeiShuModule } from './feishu/feishu.module';
     ItemModule,
     MediaModule,
     FeiShuModule,
-    CacheModule.register(),
+    CacheModule.register({
+      isGlobal: true,
+    }),
   ],
 
   // 控制器
