@@ -33,6 +33,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { MediaModule } from './media/media.module';
 import { Media } from './media/entities/media.entity';
 import { FeiShuModule } from './feishu/feishu.module';
+import { Config } from './feishu/entities/config.entity';
 @Module({
   // 导入模块的列表，这些模块导出了此模块中所需提供者
   imports: [
@@ -54,7 +55,7 @@ import { FeiShuModule } from './feishu/feishu.module';
         password: configSerivce.get('db.mysql.password'),
         database: configSerivce.get('db.mysql.database'),
         // 实体列表
-        entities: [User, Wechat, Article, Category, Item, Media],
+        entities: [User, Wechat, Article, Category, Item, Media, Config],
         synchronize: true,
       }),
       inject: [ConfigService],

@@ -5,83 +5,49 @@ import { Cache } from 'cache-manager';
 import { AccessToken } from './type';
 import { catchError, firstValueFrom, map } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
+import * as lark from '@larksuiteoapi/node-sdk';
+import { EventEmitter } from 'node:events';
 
 @Injectable()
 export class FeishuService {
+  appid: string
+  appsecret: string
+  client: lark.Client
+  private sseEvent = new EventEmitter();
+
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
-  ) {}
+  ) {
+    this.appid = this.configService.get('feishu.appid');
+    this.appsecret = this.configService.get('feishu.appsecret');
+    const client = new lark.Client({
+      appId: this.appid,
+      appSecret: this.appsecret,
+      appType: lark.AppType.SelfBuild,
+      domain: lark.Domain.Feishu,
+    });
 
-  async fetchAccessToken() {
-    const appid = this.configService.get('feishu.appid');
-    const appsecret = this.configService.get('feishu.appsecret');
-
-    const {
-      data: { code, msg, tenant_access_token: tenantAccessToken, expire },
-    } = await axios.post(
-      `https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal`,
-      {
-        app_id: appid,
-        app_secret: appsecret,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-    if (code === 0) {
-      const accessToken = {
-        tenantAccessToken,
-        expire: (expire - 300) * 1000 + Date.now(),
-      };
-      await this.cacheManager.set('tenantAccessToken', accessToken, expire);
-      return tenantAccessToken;
-    } else {
-      return null;
-    }
+    this.client = client
   }
 
   async getAccessToken() {
-    const accessToken = await this.cacheManager.get<AccessToken>(
-      'tenantAccessToken',
-    );
-
-    if (accessToken) {
-      if (new Date(accessToken.expire).getTime() > Date.now()) {
-        return accessToken.tenantAccessToken;
-      } else {
-        return this.fetchAccessToken();
-      }
-    } else {
-      return this.fetchAccessToken();
-    }
+    const res = await this.client.auth.tenantAccessToken.internal({
+      data: {
+        app_id: this.appid,
+        app_secret: this.appsecret,
+      },
+    }) as { tenant_access_token: string }
+    return res.tenant_access_token
   }
 
   async getBotGroupList() {
-    const accessToken = await this.getAccessToken();
-    const url = 'https://open.feishu.cn/open-apis/im/v1/chats';
-
-    const {
-      data: { data },
-    } = await firstValueFrom(
-      this.httpService
-        .get<any>(url, {
-          headers: {
-            Authorization: 'Bearer ' + accessToken,
-          },
-        })
-        .pipe(
-          catchError((error: AxiosError) => {
-            // this.logger.error(error.response.data);
-            console.log(error);
-            throw 'An error happened!';
-          }),
-        ),
-    );
-    return data;
+    const list = []
+    for await (const item of await this.client.im.chat.listWithIterator({})) {
+      list.push(...item.items)
+    }
+    return list
   }
 
   async sendTextMessage(receiveId, text) {
@@ -119,5 +85,9 @@ export class FeishuService {
     );
 
     return data;
+  }
+
+  getSseEvent() {
+    return this.sseEvent
   }
 }
