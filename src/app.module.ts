@@ -34,6 +34,7 @@ import { MediaModule } from './media/media.module';
 import { Media } from './media/entities/media.entity';
 import { FeiShuModule } from './feishu/feishu.module';
 import { Config } from './feishu/entities/config.entity';
+
 @Module({
   // 导入模块的列表，这些模块导出了此模块中所需提供者
   imports: [
@@ -41,7 +42,9 @@ import { Config } from './feishu/entities/config.entity';
     ScheduleModule.forRoot(),
     // 配置模块（环境变量）
     ConfigModule.forRoot({
-      envFilePath: getEnvFilePath(),
+      envFilePath: getEnvFilePath({
+        suffix: process.env.NODE_ENV,
+      }),
       load: [configuration],
       isGlobal: true, // 注册为全局模块，使用configService在全局可用，不需要到时导入
     }),
