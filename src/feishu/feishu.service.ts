@@ -7,6 +7,9 @@ import { catchError, firstValueFrom, map } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import * as lark from '@larksuiteoapi/node-sdk';
 import { EventEmitter } from 'node:events';
+import { Action } from './entities/action.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class FeishuService {
@@ -16,6 +19,8 @@ export class FeishuService {
   private sseEvent = new EventEmitter();
 
   constructor(
+    @InjectRepository(Action)
+    private actionRepository: Repository<Action>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
@@ -89,5 +94,19 @@ export class FeishuService {
 
   getSseEvent() {
     return this.sseEvent
+  }
+
+
+  saveAction(action: Action) {
+    return this.actionRepository.save(action)
+  }
+
+  getAction (chatId) {
+    return this.actionRepository.findOne({
+      where: {
+        chatId,
+        status: 0
+      },
+    })
   }
 }

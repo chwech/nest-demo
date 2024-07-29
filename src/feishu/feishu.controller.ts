@@ -3,6 +3,7 @@ import { ExcludeResIntercept } from 'src/lib/exclude.response.intercept.decorato
 import { ConfigService } from '@nestjs/config';
 import { FeishuService } from './feishu.service';
 import { Observable, interval, map } from 'rxjs';
+import { Action } from './entities/action.entity';
 
 @Controller('feishu')
 export class FeiShuController {
@@ -17,6 +18,45 @@ export class FeiShuController {
   checkSignature(@Body() body) {
     const sseEvent = this.feishuService.getSseEvent()
     console.log(body)
+
+    if (body.header.event_type === 'im.message.receive_v1') {
+      const {
+        event: {
+          message: {
+            message_type: messageType,
+            content,
+            chat_id: chatId,
+            create_time: createTime
+          }
+        }
+      } = body
+
+      if (messageType === 'text') {
+        const typeMap = {
+          '补券': 1,
+          '建券': 2
+        }
+
+        const actionParams = JSON.parse(content).text.split(' ')[1].split('-')
+        const type = actionParams[0]
+
+        if(type) {
+
+          const action = new Action()
+          action.chatId = chatId
+          action.status = 0
+          action.type = typeMap[type]
+          action.productIndex = actionParams[1]
+          action.num = actionParams[2]
+          action.endMinutes = actionParams[3]
+
+          this.feishuService.saveAction(action)
+        }
+
+
+      }
+
+    }
     sseEvent.emit('send', body)
     return { challenge: body.challenge };
   }
@@ -40,5 +80,18 @@ export class FeiShuController {
         observer.next({ data: data });
       });
     });
+  }
+
+
+  @Get('getAction')
+  async  getAction(@Query('chatId') chatId) {
+    const action = await this.feishuService.getAction(chatId)
+
+    if (action) {
+      action.status = 1
+      await this.feishuService.saveAction(action)
+    }
+
+    return action
   }
 }
