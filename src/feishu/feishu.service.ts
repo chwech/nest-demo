@@ -10,12 +10,14 @@ import { EventEmitter } from 'node:events';
 import { Action } from './entities/action.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Injectable()
 export class FeishuService {
-  appid: string
-  appsecret: string
-  client: lark.Client
+  appid: string;
+  appsecret: string;
+  client: lark.Client;
   private sseEvent = new EventEmitter();
 
   constructor(
@@ -24,6 +26,7 @@ export class FeishuService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {
     this.appid = this.configService.get('feishu.appid');
     this.appsecret = this.configService.get('feishu.appsecret');
@@ -34,25 +37,25 @@ export class FeishuService {
       domain: lark.Domain.Feishu,
     });
 
-    this.client = client
+    this.client = client;
   }
 
   async getAccessToken() {
-    const res = await this.client.auth.tenantAccessToken.internal({
+    const res = (await this.client.auth.tenantAccessToken.internal({
       data: {
         app_id: this.appid,
         app_secret: this.appsecret,
       },
-    }) as { tenant_access_token: string }
-    return res.tenant_access_token
+    })) as { tenant_access_token: string };
+    return res.tenant_access_token;
   }
 
   async getBotGroupList() {
-    const list = []
+    const list = [];
     for await (const item of await this.client.im.chat.listWithIterator({})) {
-      list.push(...item.items)
+      list.push(...item.items);
     }
-    return list
+    return list;
   }
 
   async sendTextMessage(receiveId, text) {
@@ -93,20 +96,19 @@ export class FeishuService {
   }
 
   getSseEvent() {
-    return this.sseEvent
+    return this.sseEvent;
   }
-
 
   saveAction(action: Action) {
-    return this.actionRepository.save(action)
+    return this.actionRepository.save(action);
   }
 
-  getAction (chatId) {
+  getAction(chatId) {
     return this.actionRepository.findOne({
       where: {
         chatId,
-        status: 0
+        status: 0,
       },
-    })
+    });
   }
 }

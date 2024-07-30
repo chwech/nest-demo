@@ -36,6 +36,8 @@ import { FeiShuModule } from './feishu/feishu.module';
 import { Config } from './feishu/entities/config.entity';
 import { Action } from './feishu/entities/action.entity';
 
+// 根模块
+
 @Module({
   // 导入模块的列表，这些模块导出了此模块中所需提供者
   imports: [
@@ -59,7 +61,16 @@ import { Action } from './feishu/entities/action.entity';
         password: configSerivce.get('db.mysql.password'),
         database: configSerivce.get('db.mysql.database'),
         // 实体列表
-        entities: [User, Wechat, Article, Category, Item, Media, Config, Action],
+        entities: [
+          User,
+          Wechat,
+          Article,
+          Category,
+          Item,
+          Media,
+          Config,
+          Action,
+        ],
         synchronize: true,
       }),
       inject: [ConfigService],

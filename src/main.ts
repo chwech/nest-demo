@@ -5,10 +5,23 @@ import { AppModule } from './app.module';
 import { AuthGuard } from './auth/auth.guard';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
 // import { ResponseInterceptor } from './lib/response.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    // 替换内置的logger
+    logger: WinstonModule.createLogger({
+      // options (same as WinstonModule.forRoot() options)
+      level: 'error',
+      transports: [
+        new winston.transports.Console(),
+        new winston.transports.File({ filename: 'error.log', level: 'error' }),
+        new winston.transports.File({ filename: 'combined.log' }),
+      ],
+    }),
+  });
 
   // 获取端口配置
   const configService = app.get(ConfigService);
