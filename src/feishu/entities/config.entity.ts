@@ -35,4 +35,7 @@ export class Config {
 
   @Column()
   chatId: string
+
+  @Column()
+  deviceId: string
 }

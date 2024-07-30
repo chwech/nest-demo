@@ -10,6 +10,7 @@ import { EventEmitter } from 'node:events';
 import { Action } from './entities/action.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Config } from './entities/config.entity';
 
 @Injectable()
 export class FeishuService {
@@ -21,6 +22,8 @@ export class FeishuService {
   constructor(
     @InjectRepository(Action)
     private actionRepository: Repository<Action>,
+    @InjectRepository(Config)
+    private configRepository: Repository<Config>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
@@ -108,5 +111,10 @@ export class FeishuService {
         status: 0
       },
     })
+  }
+
+  async saveConfig(data: Config) {
+    const config = await this.configRepository.findOne({ deviceId: data.deviceId });
+    return this.configRepository.save({ ...config, ...data })
   }
 }

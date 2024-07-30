@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Post, Query, Sse, HttpCode } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Sse, HttpCode, UseGuards,   Request, } from '@nestjs/common';
 import { ExcludeResIntercept } from 'src/lib/exclude.response.intercept.decorator';
 import { ConfigService } from '@nestjs/config';
 import { FeishuService } from './feishu.service';
 import { Observable, interval, map } from 'rxjs';
 import { Action } from './entities/action.entity';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('feishu')
 export class FeiShuController {
@@ -93,5 +94,12 @@ export class FeiShuController {
     }
 
     return action
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('config')
+  async saveConfig(@Body() body, @Request() req) {
+    const data = { ...body, userId: req.user.userId  }
+    return this.feishuService.saveConfig(data)
   }
 }
