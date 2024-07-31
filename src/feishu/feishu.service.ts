@@ -1,17 +1,20 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
-import axios, { AxiosError } from 'axios';
+import {
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+  LoggerService,
+} from '@nestjs/common';
+import { AxiosError } from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
-import { AccessToken } from './type';
-import { catchError, firstValueFrom, map } from 'rxjs';
+import { catchError, firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import * as lark from '@larksuiteoapi/node-sdk';
 import { EventEmitter } from 'node:events';
 import { Action } from './entities/action.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Logger } from 'winston';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class FeishuService {
@@ -26,7 +29,8 @@ export class FeishuService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService,
   ) {
     this.appid = this.configService.get('feishu.appid');
     this.appsecret = this.configService.get('feishu.appsecret');
@@ -104,6 +108,8 @@ export class FeishuService {
   }
 
   getAction(chatId) {
+    this.logger.log('打印日志');
+    this.logger.error('错误日志');
     return this.actionRepository.findOne({
       where: {
         chatId,
