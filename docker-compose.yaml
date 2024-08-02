@@ -1,0 +1,9 @@
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_USER: test
+      MYSQL_PASSWORD: 123456
+    volumes:
+      - ./docker-db-data:/var/lib/mysql
