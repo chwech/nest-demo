@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 import { AuthGuard } from './auth/auth.guard';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 // import { ResponseInterceptor } from './lib/response.interceptor';
 
 async function bootstrap() {
@@ -42,6 +43,8 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   await app.listen(port);
 }
 

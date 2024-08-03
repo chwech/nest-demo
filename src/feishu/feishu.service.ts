@@ -1,22 +1,27 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
-import axios, { AxiosError } from 'axios';
+import {
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+  LoggerService,
+} from '@nestjs/common';
+import { AxiosError } from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
-import { AccessToken } from './type';
-import { catchError, firstValueFrom, map } from 'rxjs';
+import { catchError, firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import * as lark from '@larksuiteoapi/node-sdk';
 import { EventEmitter } from 'node:events';
 import { Action } from './entities/action.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Config } from './entities/config.entity';
 
 @Injectable()
 export class FeishuService {
-  appid: string
-  appsecret: string
-  client: lark.Client
+  appid: string;
+  appsecret: string;
+  client: lark.Client;
   private sseEvent = new EventEmitter();
 
   constructor(
@@ -27,6 +32,8 @@ export class FeishuService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService,
   ) {
     this.appid = this.configService.get('feishu.appid');
     this.appsecret = this.configService.get('feishu.appsecret');
@@ -37,25 +44,25 @@ export class FeishuService {
       domain: lark.Domain.Feishu,
     });
 
-    this.client = client
+    this.client = client;
   }
 
   async getAccessToken() {
-    const res = await this.client.auth.tenantAccessToken.internal({
+    const res = (await this.client.auth.tenantAccessToken.internal({
       data: {
         app_id: this.appid,
         app_secret: this.appsecret,
       },
-    }) as { tenant_access_token: string }
-    return res.tenant_access_token
+    })) as { tenant_access_token: string };
+    return res.tenant_access_token;
   }
 
   async getBotGroupList() {
-    const list = []
+    const list = [];
     for await (const item of await this.client.im.chat.listWithIterator({})) {
-      list.push(...item.items)
+      list.push(...item.items);
     }
-    return list
+    return list;
   }
 
   async sendTextMessage(receiveId, text) {
@@ -96,19 +103,20 @@ export class FeishuService {
   }
 
   getSseEvent() {
-    return this.sseEvent
+    return this.sseEvent;
   }
-
 
   saveAction(action: Action) {
-    return this.actionRepository.save(action)
+    return this.actionRepository.save(action);
   }
 
-  getAction (chatId) {
+  getAction(chatId) {
+    this.logger.log('打印日志');
+    this.logger.error('错误日志');
     return this.actionRepository.findOne({
       where: {
         chatId,
-        status: 0
+        status: 0,
       },
     })
   }
