@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { EncrytHelper } from 'src/utils/helper';
+import { PageParams } from 'src/article/article.service';
 
 @Injectable()
 export class UsersService {
@@ -27,5 +28,22 @@ export class UsersService {
     };
     const user = new User(newUser);
     return this.userRepository.save(user);
+  }
+
+  async findAll(options: PageParams) {
+    const [data, total] = await this.userRepository.findAndCount({
+      skip: (options.page - 1) * options.per_page,
+      take: options.per_page
+    });
+
+    return {
+      data,
+      total,
+      current_page: options.page,
+    };
+  }
+
+  async remove(id: number) {
+    return await this.userRepository.delete(id);
   }
 }

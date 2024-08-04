@@ -6,7 +6,7 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { Article } from './entities/article.entity';
 
-interface PageParams {
+export interface PageParams {
   page: number;
   per_page: number;
 }

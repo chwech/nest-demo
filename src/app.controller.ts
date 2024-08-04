@@ -51,14 +51,14 @@ export class AppController {
     return this.userService.create(params);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @StatusText('获取用户信息成功')
-  @UseInterceptors(ClassSerializerInterceptor)
-  @Get('user')
-  getUser(@Request() req): UserDto {
-    console.log('用户信息');
-    return req.user;
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @StatusText('获取用户信息成功')
+  // @UseInterceptors(ClassSerializerInterceptor)
+  // @Get('user')
+  // getUser(@Request() req): UserDto {
+  //   console.log('用户信息');
+  //   return req.user;
+  // }
 
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
