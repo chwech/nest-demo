@@ -9,7 +9,7 @@ export class AuthGuard implements CanActivate {
     // console.log(context);
     const request = context.switchToHttp().getRequest();
 
-    console.log('守卫', request.headers);
+    // console.log('守卫', request.headers);
 
     // return false的话，将不进入controller，响应403
     return true;

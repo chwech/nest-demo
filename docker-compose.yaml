@@ -5,15 +5,17 @@ services:
       - db
     user: "node"
     working_dir: /home/node/app
-    environment:
-      - NODE_ENV=production
+    # environment:
+    #   - NODE_ENV=production
     volumes:
       - ./:/home/node/app
     expose:
       - "8081"
+      - "9229"
     ports: # use if it is necessary to expose the container to the host machine
       - "5005:8001"
-    command: "npm run start:debug"
+      - "9229:9229"
+    command: "npm run start:dockerDev"
     networks:
       - nest-demo
   db:

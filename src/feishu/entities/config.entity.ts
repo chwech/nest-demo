@@ -1,11 +1,13 @@
 import {
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   Tree,
   TreeChildren,
   TreeParent,
 } from 'typeorm';
+import { Action } from './action.entity';
 
 @Entity()
 export class Config {
@@ -37,5 +39,8 @@ export class Config {
   chatId: string
 
   @Column()
-  deviceId: string
+  buyinNickname: string // 昵称，给机器人补券方便使用
+
+  @Column()
+  buyinAccountId: string
 }

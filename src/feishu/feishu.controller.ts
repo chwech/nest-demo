@@ -1,26 +1,29 @@
-import { Body, Controller, Get, Post, Query, Sse, HttpCode, UseGuards,   Request, } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Sse, HttpCode, UseGuards,   Request, LoggerService, Inject, } from '@nestjs/common';
 import { ExcludeResIntercept } from 'src/lib/exclude.response.intercept.decorator';
 import { ConfigService } from '@nestjs/config';
 import { FeishuService } from './feishu.service';
 import { Observable, interval, map } from 'rxjs';
 import { Action } from './entities/action.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Controller('feishu')
 export class FeiShuController {
   constructor(
     private readonly feishuService: FeishuService,
     private readonly configService: ConfigService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService,
   ) {}
 
   @ExcludeResIntercept()
   @Post('test')
   @HttpCode(200)
-  checkSignature(@Body() body) {
+  async checkSignature(@Body() body) {
     const sseEvent = this.feishuService.getSseEvent()
-    console.log(body)
+    this.logger.log(body)
 
-    if (body.header.event_type === 'im.message.receive_v1') {
+    if (body?.header?.event_type === 'im.message.receive_v1') {
       const {
         event: {
           message: {
@@ -42,17 +45,21 @@ export class FeiShuController {
         const type = actionParams[0]
 
         if(type) {
-
+          const buyinNickname = actionParams[1]
           const action = new Action()
-          action.chatId = chatId
           action.status = 0
           action.type = typeMap[type]
-          action.productIndex = actionParams[1]
-          action.num = actionParams[2]
-          action.endMinutes = actionParams[3]
+          action.productIndex = actionParams[2]
+          action.num = actionParams[3]
+          action.endMinutes = actionParams[4]
+          action.buyinNickname = buyinNickname
+          action.chatId = chatId
 
+          this.logger.log(action)
           this.feishuService.saveAction(action)
         }
+
+
 
 
       }
@@ -83,17 +90,18 @@ export class FeiShuController {
     });
   }
 
-
+  @UseGuards(JwtAuthGuard)
   @Get('getAction')
-  async  getAction(@Query('chatId') chatId) {
-    const action = await this.feishuService.getAction(chatId)
-
-    if (action) {
-      action.status = 1
-      await this.feishuService.saveAction(action)
-    }
-
+  async getAction(@Query() query) {
+    const chatId = query.chatId
+    const buyinNickname = query.buyinNickname
+    const action = await this.feishuService.getAction(chatId, buyinNickname)
     return action
+  }
+
+  @Post('updateActionStatus')
+  async updateActionStatus(@Body() body) {
+    return this.feishuService.saveAction(body)
   }
 
   @UseGuards(JwtAuthGuard)

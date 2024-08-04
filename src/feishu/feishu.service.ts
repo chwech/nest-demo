@@ -110,19 +110,22 @@ export class FeishuService {
     return this.actionRepository.save(action);
   }
 
-  getAction(chatId) {
-    this.logger.log('打印日志');
-    this.logger.error('错误日志');
+  getAction(chatId, buyinNickname) {
     return this.actionRepository.findOne({
       where: {
         chatId,
+        buyinNickname,
         status: 0,
       },
     })
   }
 
   async saveConfig(data: Config) {
-    const config = await this.configRepository.findOne({ deviceId: data.deviceId });
+    const config = await this.getConfig({ buyinAccountId: data.buyinAccountId });
     return this.configRepository.save({ ...config, ...data })
+  }
+
+  async getConfig(options) {
+    return this.configRepository.findOne(options);
   }
 }

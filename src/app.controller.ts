@@ -3,6 +3,8 @@ import {
   Controller,
   Get,
   HttpCode,
+  Inject,
+  LoggerService,
   Post,
   Query,
   Render,
@@ -22,6 +24,7 @@ import { Cron } from '@nestjs/schedule';
 import { Observable, interval, map } from 'rxjs';
 import { ExcludeResIntercept } from './lib/exclude.response.intercept.decorator';
 import { UsersService } from './users/users.service';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Controller()
 export class AppController {
@@ -30,12 +33,15 @@ export class AppController {
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
     private readonly userService: UsersService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService,
   ) {}
 
   @Get()
   @Render('index')
   @ExcludeResIntercept()
   root() {
+    this.logger.log('访问首页')
     return { message: 'hello nest' };
   }
 
@@ -88,3 +94,6 @@ export class AppController {
     return interval(1000).pipe(map((_) => ({ data: { hello: 'world' } })));
   }
 }
+
+
+

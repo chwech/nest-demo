@@ -22,11 +22,11 @@ export class ResponseInterceptor implements NestInterceptor {
       context.getHandler(),
     );
 
-    console.log('before拦截器', statusText);
+    // console.log('before拦截器', statusText);
 
     return next.handle().pipe(
       map((data) => {
-        console.log('after拦截器', data);
+        // console.log('after拦截器', data);
 
         if (isExclude) {
           return data;
