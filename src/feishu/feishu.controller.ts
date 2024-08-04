@@ -44,7 +44,7 @@ export class FeiShuController {
         const actionParams = JSON.parse(content).text.split(' ')[1].split('-')
         const type = actionParams[0]
 
-        if(type) {
+        if(typeMap[type]) {
           const buyinNickname = actionParams[1]
           const action = new Action()
           action.status = 0
@@ -56,14 +56,16 @@ export class FeiShuController {
           action.chatId = chatId
 
           this.logger.log(action)
-          this.feishuService.saveAction(action)
+
+          if (!action.type || !action.productIndex || !action.num || !action.buyinNickname) {
+            this.feishuService.sendTextMessage(chatId, '指令格式错误')
+          } else {
+            this.feishuService.saveAction(action)
+          }
+        } else {
+          this.feishuService.sendTextMessage(chatId, '指令格式错误')
         }
-
-
-
-
       }
-
     }
     sseEvent.emit('send', body)
     return { challenge: body.challenge };
