@@ -3,7 +3,7 @@ services:
     image: "node:16.20.2"
     depends_on:  
       - db
-    user: "node"
+    user: "root"
     working_dir: /home/node/app
     # environment:
     #   - NODE_ENV=production
@@ -30,6 +30,8 @@ services:
       MYSQL_DATABASE: test
     volumes:
       - ./docker-db-data:/var/lib/mysql
+    ports:
+      - "9527:3306"
     networks:
       - nest-demo
 
