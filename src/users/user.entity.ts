@@ -19,6 +19,19 @@ export class User {
   @Column()
   iv: string;
 
+  @Column()
+  connect_status: number;
+
+  @Column('timestamp', {
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  create_at: string;
+
+  @Column('timestamp', {
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  update_at: string;
+
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);
   }

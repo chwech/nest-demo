@@ -22,11 +22,13 @@ export class AuthService {
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findOne(username);
-    const decryptPass = await this.encrytHelper.decrypt(user.password, user.iv);
-
-    if (user && decryptPass === pass) {
-      const { iv, password, ...result } = user;
-      return result;
+    
+    if (user) {
+      const decryptPass = await this.encrytHelper.decrypt(user.password, user.iv);
+      if (decryptPass === pass) {
+        const { iv, password, ...result } = user;
+        return result;
+      }
     }
     return null;
   }
