@@ -114,12 +114,14 @@ export class FeishuService {
       messageId: action.messageId,
     });
     if (!existAction) {
+      return this.actionRepository.create(action);
+    } else {
       return this.actionRepository.save(action);
     }
   }
 
   findOneAction(where) {
-    return this.actionRepository.findOne(where);
+    return this.actionRepository.findOne({ where });
   }
 
   getAction(chatId, buyinNickname) {
