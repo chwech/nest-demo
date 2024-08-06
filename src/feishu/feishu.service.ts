@@ -60,7 +60,10 @@ export class FeishuService {
   async getBotGroupList() {
     const list = [];
     for await (const item of await this.client.im.chat.listWithIterator({})) {
-      list.push(...item.items);
+      this.logger.log(item);
+      if (Array.isArray(item.items)) {
+        list.push(...item.items);
+      }
     }
     return list;
   }
