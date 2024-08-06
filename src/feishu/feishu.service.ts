@@ -106,8 +106,17 @@ export class FeishuService {
     return this.sseEvent;
   }
 
-  saveAction(action: Action) {
-    return this.actionRepository.save(action);
+  async saveAction(action: Action) {
+    const existAction = await this.findOneAction({
+      messageId: action.messageId,
+    });
+    if (!existAction) {
+      return this.actionRepository.save(action);
+    }
+  }
+
+  findOneAction(where) {
+    return this.actionRepository.findOne(where);
   }
 
   getAction(chatId, buyinNickname) {
@@ -117,12 +126,14 @@ export class FeishuService {
         buyinNickname,
         status: 0,
       },
-    })
+    });
   }
 
   async saveConfig(data: Config) {
-    const config = await this.getConfig({ buyinAccountId: data.buyinAccountId });
-    return this.configRepository.save({ ...config, ...data })
+    const config = await this.getConfig({
+      buyinAccountId: data.buyinAccountId,
+    });
+    return this.configRepository.save({ ...config, ...data });
   }
 
   async getConfig(options) {

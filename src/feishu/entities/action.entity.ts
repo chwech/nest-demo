@@ -1,15 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  Tree,
-  TreeChildren,
-  TreeParent,
-} from 'typeorm';
-import { Config } from './config.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Action {
@@ -17,27 +6,26 @@ export class Action {
   id: number;
 
   @Column()
-  type: number
+  type: number;
 
   @Column()
-  chatId: string
+  chatId: string;
 
   @Column()
-  buyinNickname: string
-
-
+  buyinNickname: string;
 
   @Column()
-  status: number
-
-
+  status: number;
 
   @Column()
-  productIndex: number
+  productIndex: number;
 
   @Column()
-  num: number
+  num: number;
 
   @Column({ nullable: true })
-  endMinutes: number
+  endMinutes: number;
+
+  @Column()
+  messageId: string;
 }

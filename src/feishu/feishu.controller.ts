@@ -1,4 +1,16 @@
-import { Body, Controller, Get, Post, Query, Sse, HttpCode, UseGuards,   Request, LoggerService, Inject, } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Sse,
+  HttpCode,
+  UseGuards,
+  Request,
+  LoggerService,
+  Inject,
+} from '@nestjs/common';
 import { ExcludeResIntercept } from 'src/lib/exclude.response.intercept.decorator';
 import { ConfigService } from '@nestjs/config';
 import { FeishuService } from './feishu.service';
@@ -20,54 +32,60 @@ export class FeiShuController {
   @Post('test')
   @HttpCode(200)
   async checkSignature(@Body() body) {
-    const sseEvent = this.feishuService.getSseEvent()
-    this.logger.log(body)
+    const sseEvent = this.feishuService.getSseEvent();
+    this.logger.log(body);
 
     if (body?.header?.event_type === 'im.message.receive_v1') {
       const {
         event: {
           message: {
+            message_id: messageId,
             message_type: messageType,
             content,
             chat_id: chatId,
-            create_time: createTime
-          }
-        }
-      } = body
+          },
+        },
+      } = body;
 
       if (messageType === 'text') {
         const typeMap = {
-          '补券': 1,
-          '建券': 2
-        }
+          补券: 1,
+          建券: 2,
+        };
 
-        const actionParams = JSON.parse(content).text.split(' ')[1].split('-')
-        const type = actionParams[0]
+        const actionParams = JSON.parse(content).text.split(' ')[1].split('-');
+        const type = actionParams[0];
 
-        if(typeMap[type]) {
-          const buyinNickname = actionParams[1]
-          const action = new Action()
-          action.status = 0
-          action.type = typeMap[type]
-          action.productIndex = actionParams[2]
-          action.num = actionParams[3]
-          action.endMinutes = actionParams[4]
-          action.buyinNickname = buyinNickname
-          action.chatId = chatId
+        if (typeMap[type]) {
+          const buyinNickname = actionParams[1];
+          const action = new Action();
+          action.status = 0;
+          action.type = typeMap[type];
+          action.productIndex = actionParams[2];
+          action.num = actionParams[3];
+          action.endMinutes = actionParams[4];
+          action.buyinNickname = buyinNickname;
+          action.chatId = chatId;
+          action.messageId = messageId;
 
-          this.logger.log(action)
+          this.logger.log(action);
 
-          if (!action.type || !action.productIndex || !action.num || !action.buyinNickname) {
-            this.feishuService.sendTextMessage(chatId, '指令格式错误')
+          if (
+            !action.type ||
+            !action.productIndex ||
+            !action.num ||
+            !action.buyinNickname
+          ) {
+            this.feishuService.sendTextMessage(chatId, '指令格式错误');
           } else {
-            this.feishuService.saveAction(action)
+            this.feishuService.saveAction(action);
           }
         } else {
-          this.feishuService.sendTextMessage(chatId, '指令格式错误')
+          this.feishuService.sendTextMessage(chatId, '指令格式错误');
         }
       }
     }
-    sseEvent.emit('send', body)
+    sseEvent.emit('send', body);
     return { challenge: body.challenge };
   }
 
@@ -85,7 +103,7 @@ export class FeiShuController {
   @Sse('sse')
   sse(): Observable<any> {
     return new Observable<any>((observer) => {
-      const sseEvent = this.feishuService.getSseEvent()
+      const sseEvent = this.feishuService.getSseEvent();
       sseEvent.on('send', (data: any) => {
         observer.next({ data: data });
       });
@@ -95,21 +113,21 @@ export class FeiShuController {
   @UseGuards(JwtAuthGuard)
   @Get('getAction')
   async getAction(@Query() query) {
-    const chatId = query.chatId
-    const buyinNickname = query.buyinNickname
-    const action = await this.feishuService.getAction(chatId, buyinNickname)
-    return action
+    const chatId = query.chatId;
+    const buyinNickname = query.buyinNickname;
+    const action = await this.feishuService.getAction(chatId, buyinNickname);
+    return action;
   }
 
   @Post('updateActionStatus')
   async updateActionStatus(@Body() body) {
-    return this.feishuService.saveAction(body)
+    return this.feishuService.saveAction(body);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('config')
   async saveConfig(@Body() body, @Request() req) {
-    const data = { ...body, userId: req.user.userId  }
-    return this.feishuService.saveConfig(data)
+    const data = { ...body, userId: req.user.userId };
+    return this.feishuService.saveConfig(data);
   }
 }
