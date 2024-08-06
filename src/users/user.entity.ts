@@ -19,7 +19,7 @@ export class User {
   @Column()
   iv: string;
 
-  @Column()
+  @Column({ default: 0 })
   connect_status: number;
 
   @Column('timestamp', {
