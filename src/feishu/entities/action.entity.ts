@@ -20,10 +20,10 @@ export class Action {
   @Column()
   productIndex: number;
 
-  @Column()
+  @Column({ default: 1 })
   num: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: 31 })
   endMinutes: number;
 
   @Column()

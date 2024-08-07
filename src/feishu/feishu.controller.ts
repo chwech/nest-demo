@@ -68,12 +68,11 @@ export class FeiShuController {
           action.chatId = chatId;
           action.messageId = messageId;
 
-          this.logger.log(action);
+          this.logger.log(action, FeiShuController.name);
 
           if (
             !action.type ||
             !action.productIndex ||
-            !action.num ||
             !action.buyinNickname
           ) {
             this.feishuService.sendTextMessage(chatId, '指令格式错误');
