@@ -46,4 +46,14 @@ export class UsersService {
   async remove(id: number) {
     return await this.userRepository.delete(id);
   }
+
+  async update(id:number, user) {
+    const _user = await this.userRepository.findOne(id);
+    const { iv, encrytText: password } = await this.encryHelper.encryt(
+      user.password,
+    );
+    _user.password = password
+    _user.iv = iv
+    return this.userRepository.save(_user)
+  }
 }

@@ -7,10 +7,12 @@ import {
   Delete,
   Query,
   HttpCode,
+  Put,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
+import { UserDto } from './users.dto';
 
 @Controller('user')
 export class UserController {
@@ -32,10 +34,10 @@ export class UserController {
   //   return this.userService.findOne(+id);
   // }
 
-  // @Patch(':id')
-  // update(@Param('id') id: number, @Body() updateArticleDto: UpdateArticleDto) {
-  //   return this.userService.update(id, updateArticleDto);
-  // }
+  @Put(':id')
+  update(@Param('id') id: number, @Body() updateArticleDto: UserDto) {
+    return this.userService.update(id, updateArticleDto);
+  }
 
   @Delete(':id')
   remove(@Param('id') id: number) {

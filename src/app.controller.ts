@@ -50,13 +50,14 @@ export class AppController {
     return this.userService.create(params);
   }
 
-  @StatusText('获取用户信息成功')
-  @UseInterceptors(ClassSerializerInterceptor)
-  @Get('user')
-  getUser(@Request() req): UserDto {
-    return req.user;
-  }
+  // @StatusText('获取用户信息成功')
+  // @UseInterceptors(ClassSerializerInterceptor)
+  // @Get('user')
+  // getUser(@Request() req): UserDto {
+  //   return req.user;
+  // }
 
+  @Public()
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   @HttpCode(200)

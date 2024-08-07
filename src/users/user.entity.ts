@@ -32,6 +32,9 @@ export class User {
   })
   update_at: string;
 
+  @Column({ default: 1 })
+  role: number
+
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);
   }
