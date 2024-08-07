@@ -39,6 +39,7 @@ import {
   utilities as nestWinstonModuleUtilities,
 } from 'nest-winston';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { GatewayModule } from './gateway/gateway.module';
 
 // 根模块
 
@@ -89,6 +90,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
     ItemModule,
     MediaModule,
     FeiShuModule,
+    GatewayModule,
     CacheModule.register({
       isGlobal: true,
     }),
