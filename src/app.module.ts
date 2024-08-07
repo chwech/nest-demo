@@ -14,10 +14,8 @@ import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { UsersModule } from './users/users.module';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './auth/local.strategy';
-import { JwtStrategy } from './auth/jwt.strategy';
 import { User } from './users/user.entity';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './lib/response.interceptor';
 import { ArticleModule } from './article/article.module';
 import { Article } from './article/entities/article.entity';
@@ -36,7 +34,11 @@ import { FeiShuModule } from './feishu/feishu.module';
 import { Config } from './feishu/entities/config.entity';
 import { Action } from './feishu/entities/action.entity';
 import * as winston from 'winston';
-import { WinstonModule } from 'nest-winston';
+import {
+  WinstonModule,
+  utilities as nestWinstonModuleUtilities,
+} from 'nest-winston';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 // 根模块
 
@@ -92,11 +94,31 @@ import { WinstonModule } from 'nest-winston';
     }),
     WinstonModule.forRoot({
       // options (same as WinstonModule.forRoot() options)
-      // level: 'error',
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.ms(),
+        winston.format.json(),
+      ),
       transports: [
-        new winston.transports.Console(),
-        new winston.transports.File({ filename: 'error.log', level: 'error' }),
-        new winston.transports.File({ filename: 'combined.log' }),
+        new winston.transports.Console({
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.ms(),
+            nestWinstonModuleUtilities.format.nestLike('buyin', {
+              colors: true,
+              prettyPrint: true,
+              processId: true,
+              appName: true,
+            }),
+          ),
+        }),
+        new winston.transports.File({
+          filename: 'error.log',
+          level: 'error',
+        }),
+        new winston.transports.File({
+          filename: 'combined.log',
+        }),
       ],
     }),
   ],
@@ -108,8 +130,12 @@ import { WinstonModule } from 'nest-winston';
   // 将提供者放在providers数组里，nest才能正确执行注入
   providers: [
     AppService,
-    LocalStrategy,
-    JwtStrategy,
+    // 全局守卫
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    // 全局拦截器
     {
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,

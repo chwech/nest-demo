@@ -6,7 +6,6 @@ import {
   Query,
   Sse,
   HttpCode,
-  UseGuards,
   Request,
   LoggerService,
   Inject,
@@ -14,10 +13,10 @@ import {
 import { ExcludeResIntercept } from 'src/lib/exclude.response.intercept.decorator';
 import { ConfigService } from '@nestjs/config';
 import { FeishuService } from './feishu.service';
-import { Observable, interval, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Action } from './entities/action.entity';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Public } from 'src/lib/public';
 
 @Controller('feishu')
 export class FeiShuController {
@@ -28,6 +27,7 @@ export class FeiShuController {
     private readonly logger: LoggerService,
   ) {}
 
+  @Public()
   @ExcludeResIntercept()
   @Post('test')
   @HttpCode(200)
@@ -110,7 +110,6 @@ export class FeiShuController {
     });
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('getAction')
   async getAction(@Query() query) {
     const chatId = query.chatId;
@@ -124,7 +123,6 @@ export class FeiShuController {
     return this.feishuService.saveAction(body);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('config')
   async saveConfig(@Body() body, @Request() req) {
     const data = { ...body, userId: req.user.userId };

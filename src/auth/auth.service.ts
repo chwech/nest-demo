@@ -20,11 +20,15 @@ export class AuthService {
     };
   }
 
+  // 检索用户和验证密码
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findOne(username);
-    
+
     if (user) {
-      const decryptPass = await this.encrytHelper.decrypt(user.password, user.iv);
+      const decryptPass = await this.encrytHelper.decrypt(
+        user.password,
+        user.iv,
+      );
       if (decryptPass === pass) {
         const { iv, password, ...result } = user;
         return result;

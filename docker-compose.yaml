@@ -1,6 +1,7 @@
 services:
   node:
     image: "node:16.20.2"
+    restart: "always"
     depends_on:  
       - db
     user: "root"
@@ -23,6 +24,7 @@ services:
       - nest-demo
   db:
     image: mysql:latest
+    restart: "always"
     environment:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_USER: test

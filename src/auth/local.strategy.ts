@@ -6,10 +6,11 @@ import { AuthService } from './auth.service';
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AuthService) {
-    // super可以传递策略选项
+    // 1. super可以传递策略选项
     super();
   }
 
+  // 2. 验证回调
   // 实现valitate验证
   async validate(username: string, password: string): Promise<any> {
     const user = await this.authService.validateUser(username, password);
