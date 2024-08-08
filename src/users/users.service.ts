@@ -1,16 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { EncrytHelper } from 'src/utils/helper';
 import { PageParams } from 'src/article/article.service';
+import { Cache } from 'cache-manager'
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private encryHelper: EncrytHelper,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 
   async findOne(username: string): Promise<User | undefined> {
@@ -36,8 +38,15 @@ export class UsersService {
       take: options.per_page
     });
 
+    const connectStatus = await this.cacheManager.get('connectStatus')
+    const _data = data?.map(item => {
+      item.connect_status = connectStatus ? connectStatus[item.id] : 0
+      item.connect_status = item.connect_status ? item.connect_status : 0
+      return item
+    })
+
     return {
-      data,
+      data: _data,
       total,
       current_page: options.page,
     };

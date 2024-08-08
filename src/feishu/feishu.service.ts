@@ -4,10 +4,8 @@ import {
   Injectable,
   LoggerService,
 } from '@nestjs/common';
-import { AxiosError } from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
-import { catchError, firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import * as lark from '@larksuiteoapi/node-sdk';
 import { EventEmitter } from 'node:events';
@@ -69,40 +67,16 @@ export class FeishuService {
   }
 
   async sendTextMessage(receiveId, text) {
-    const accessToken = await this.getAccessToken();
-    const url = 'https://open.feishu.cn/open-apis/im/v1/messages';
-
-    const {
-      data: { data },
-    } = await firstValueFrom(
-      this.httpService
-        .post(
-          url,
-          {
-            receive_id: receiveId,
-            msg_type: 'text',
-            content: JSON.stringify({ text }),
-          },
-          {
-            headers: {
-              Authorization: 'Bearer ' + accessToken,
-              'Content-Type': 'application/json',
-            },
-            params: {
-              receive_id_type: 'chat_id',
-            },
-          },
-        )
-        .pipe(
-          catchError((error: AxiosError) => {
-            // this.logger.error(error.response.data);
-            console.log(error);
-            throw 'An error happened!';
-          }),
-        ),
-    );
-
-    return data;
+    return this.client.im.message.create({
+      params: {
+        receive_id_type: 'chat_id'
+      },
+      data: {
+        receive_id: receiveId,
+        msg_type: 'text',
+        content: JSON.stringify({ text }),
+      },
+    })
   }
 
   getSseEvent() {

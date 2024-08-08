@@ -9,7 +9,7 @@ import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
-    JwtModule.register({ secret: 'secret-jwt-chwech-app' }),
+    JwtModule.register({ secret: 'secret-jwt-chwech-app', signOptions: { expiresIn: '1y' } }),
     UsersModule,
   ],
 
