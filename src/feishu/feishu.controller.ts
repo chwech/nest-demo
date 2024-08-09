@@ -58,8 +58,8 @@ export class FeiShuController {
           建券: 2,
         };
 
-        const actionParams = JSON.parse(content).text.split(' ')[1].split('-');
-        const type = actionParams[0];
+        const actionParams = JSON.parse(content).text.split(' ')?.[1]?.split('-');
+        const type = actionParams?.[0];
 
         if (typeMap[type]) {
           const buyinNickname = actionParams[1];

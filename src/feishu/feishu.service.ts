@@ -88,7 +88,7 @@ export class FeishuService {
       messageId: action.messageId,
     });
     if (!existAction) {
-      return this.actionRepository.create(action);
+      return this.actionRepository.insert(action);
     } else {
       return this.actionRepository.save(action);
     }
