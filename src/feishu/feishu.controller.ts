@@ -37,7 +37,6 @@ export class FeiShuController {
   @Post('test')
   @HttpCode(200)
   async checkSignature(@Body() body) {
-    const sseEvent = this.feishuService.getSseEvent();
     this.logger.log(body);
 
     if (body?.header?.event_type === 'im.message.receive_v1') {
@@ -89,7 +88,7 @@ export class FeiShuController {
         }
       }
     }
-    sseEvent.emit('send', body);
+
     return { challenge: body.challenge };
   }
 
@@ -119,7 +118,12 @@ export class FeiShuController {
   async getAction(@Query() query, @Request() req) {
     const sseEvent = this.feishuService.getSseEvent();
     try {
-      this.schedulerRegistry.deleteTimeout(req.user.userId)
+      const existTimeout = this.schedulerRegistry.doesExist('timeout', req.user.userId)
+      if (existTimeout) {
+        this.schedulerRegistry.deleteTimeout(req.user.userId)
+        const timeouts = this.schedulerRegistry.getTimeouts();
+        this.logger.log(timeouts, FeiShuController.name)
+      }
     } catch (error) {
       this.logger.error(error.message, error.stack)
     }
@@ -146,7 +150,7 @@ export class FeiShuController {
       }
     }
   
-    const timeout = setTimeout(callback, 13000);
+    const timeout = setTimeout(callback, 30000);
     this.schedulerRegistry.addTimeout(req.user.userId, timeout);
 
     const chatId = query.chatId;
